@@ -251,7 +251,7 @@ h1{
     const arr = (loc?.packs || []).map(p => ({
       id: p.id,
       title: p.title,
-      level: p.level || "",
+      //level: p.level || "",
       topic: p.topic || "",
       words: Number.isFinite(p.words) ? p.words : null,
       description: p.description || "",
@@ -293,7 +293,7 @@ h1{
         <div class="itemTop">
           <div class="titleRow">
             <h3 class="title">
-              ${p.level ? `<span class="level">${esc(p.level)}</span>` : ""}
+             // ${p.level ? `<span class="level">${esc(p.level)}</span>` : ""}
               ${esc(p.title)}
             </h3>
           </div>
@@ -306,7 +306,7 @@ h1{
 
         <div class="meta">
           <span>EN → ${esc(activeLocale.toUpperCase())}</span>
-     
+     ${p.level ? `<span class="level">${esc(p.level)}</span>` : ""}
           ${Number.isFinite(p.words) ? `<span>${esc(p.words)} слов</span>` : ""}
         </div>
       </div>
