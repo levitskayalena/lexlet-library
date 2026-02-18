@@ -90,8 +90,9 @@ h1{
 /* search */
 .search{
   margin-top:16px;
-  padding:12px 14px;
-  background: var(--paper);
+  padding:16px;
+  background: var(--panel);
+  border: 1px solid rgba(26,26,26,.10);
   border-radius: var(--radius);
 }
 .search input{
@@ -101,6 +102,10 @@ h1{
   background: transparent;
   color: var(--text);
   font-size:14px;
+}
+
+.search input::placeholder{
+  color: var(--muted);
 }
 
 /* list */
