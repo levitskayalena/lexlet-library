@@ -352,7 +352,6 @@ h1{
         <div class="itemTop">
           <div class="titleRow">
             <h3 class="title">
-              ${p.level ? `<span class="level">${esc(p.level)}</span>` : ""}
               ${esc(p.title)}
             </h3>
           </div>
@@ -367,6 +366,7 @@ h1{
 
         <div class="meta">
           <span>EN → ${esc(activeLocale.toUpperCase())}</span>
+          ${p.level ? `<span class="level">${esc(p.level)}</span>` : ""}
           ${Number.isFinite(p.words) ? `<span>${esc(p.words)} ${esc(t.words)}</span>` : ""}
         </div>
       </div>
