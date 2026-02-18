@@ -251,7 +251,7 @@ h1{
     const arr = (loc?.packs || []).map(p => ({
       id: p.id,
       title: p.title,
-      //level: p.level || "",
+      level: p.level || "",
       topic: p.topic || "",
       words: Number.isFinite(p.words) ? p.words : null,
       description: p.description || "",
