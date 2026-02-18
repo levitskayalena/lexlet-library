@@ -13,7 +13,8 @@
   --muted: rgba(26,26,26,.55);
   --border: rgba(26,26,26,.12);
   --accent: #D26759;
-
+  --panel: #F4EFE6; /* светлее, чем --paper */
+      
   --radius: 14px;
   --max: 760px;
 
@@ -107,15 +108,29 @@ h1{
   margin-top:16px;
   display:flex;
   flex-direction:column;
-  gap:12px;
+  gap:14px;              /* больше воздуха между блоками */
 }
 
 .item{
   padding:16px;
-  background: var(--paper);
+  background: var(--panel);     /* важный момент */
+  border: 1px solid rgba(26,26,26,.10);
   border-radius: var(--radius);
 }
-
+    /* тонкий разделитель между заголовком и описанием */
+.divider{
+  height:1px;
+  background: rgba(26,26,26,.08);
+  margin: 12px 0;
+}
+    
+.itemTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 12px;
+}
+    
 .title{
   margin:0;
   font-size:15px;
@@ -129,11 +144,10 @@ h1{
 }
 
 .descRow{
-  margin-top:10px;
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  align-items:flex-start;
+  display:grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items:start;
 }
 
 .desc{
@@ -159,7 +173,7 @@ h1{
 }
 
 .meta{
-  margin-top:12px;
+  margin-top: 12px;
   display:flex;
   gap:8px;
   flex-wrap:wrap;
@@ -168,7 +182,8 @@ h1{
 }
 
 .meta span{
-  background: rgba(26,26,26,.06);
+  background: rgba(26,26,26,.05);
+  border: 1px solid rgba(26,26,26,.06);
   padding:4px 8px;
   border-radius:999px;
 }
