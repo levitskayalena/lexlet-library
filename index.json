@@ -5,28 +5,150 @@
   "uiLocales": [
     {
       "id": "ru",
-      "title": "Русский",
+      "title": "Russian",
       "nativeName": "Русский",
       "packs": [
         {
           "id": "core-a1",
-          "title": "A1 • Core",
+          "title": "A1 • Core (500)",
           "level": "A1",
           "topic": "core",
+          "group": "Start here",
           "words": 500,
           "tags": ["core", "frequency"],
           "updated": "2026-02-18",
           "popularity": 100,
+          "description": "База для старта: частотные слова + короткий контекст.",
           "csv": {
             "url": "https://USERNAME.github.io/lexlet-library/en-ru/core-a1.csv",
+            "format": "word,translation,context"
+          }
+        },
+        {
+          "id": "travel-a2",
+          "title": "A2 • Travel (320)",
+          "level": "A2",
+          "topic": "travel",
+          "group": "Themes",
+          "words": 320,
+          "tags": ["travel", "dialogues"],
+          "updated": "2026-02-18",
+          "popularity": 70,
+          "description": "Аэропорт, отель, еда, просьбы, мини-диалоги.",
+          "csv": {
+            "url": "https://USERNAME.github.io/lexlet-library/en-ru/travel-a2.csv",
+            "format": "word,translation,context"
+          }
+        },
+        {
+          "id": "phrasal-b1",
+          "title": "B1 • Phrasal Verbs (250)",
+          "level": "B1",
+          "topic": "phrasal verbs",
+          "group": "Grammar",
+          "words": 250,
+          "tags": ["phrasal", "verbs"],
+          "updated": "2026-02-18",
+          "popularity": 55,
+          "description": "Фразовые глаголы с контекстом (без воды).",
+          "csv": {
+            "url": "https://USERNAME.github.io/lexlet-library/en-ru/phrasal-b1.csv",
             "format": "word,translation,context"
           }
         }
       ]
     },
-    { "id": "fr", "title": "Français", "nativeName": "Français", "packs": [] },
-    { "id": "es", "title": "Español", "nativeName": "Español", "packs": [] },
-    { "id": "zh", "title": "中文", "nativeName": "中文", "packs": [] },
-    { "id": "de", "title": "Deutsch", "nativeName": "Deutsch", "packs": [] }
+    {
+      "id": "fr",
+      "title": "French",
+      "nativeName": "Français",
+      "packs": [
+        {
+          "id": "core-a1",
+          "title": "A1 • Core (500)",
+          "level": "A1",
+          "topic": "core",
+          "group": "Start here",
+          "words": 500,
+          "tags": ["core", "frequency"],
+          "updated": "2026-02-18",
+          "popularity": 90,
+          "description": "Les bases pour commencer : mots fréquents + contexte court.",
+          "csv": {
+            "url": "https://USERNAME.github.io/lexlet-library/en-fr/core-a1.csv",
+            "format": "word,translation,context"
+          }
+        }
+      ]
+    },
+    {
+      "id": "es",
+      "title": "Spanish",
+      "nativeName": "Español",
+      "packs": [
+        {
+          "id": "core-a1",
+          "title": "A1 • Core (500)",
+          "level": "A1",
+          "topic": "core",
+          "group": "Start here",
+          "words": 500,
+          "tags": ["core", "frequency"],
+          "updated": "2026-02-18",
+          "popularity": 90,
+          "description": "Base para empezar: palabras frecuentes + contexto corto.",
+          "csv": {
+            "url": "https://USERNAME.github.io/lexlet-library/en-es/core-a1.csv",
+            "format": "word,translation,context"
+          }
+        }
+      ]
+    },
+    {
+      "id": "zh",
+      "title": "Chinese",
+      "nativeName": "中文",
+      "packs": [
+        {
+          "id": "core-a1",
+          "title": "A1 • Core (500)",
+          "level": "A1",
+          "topic": "core",
+          "group": "Start here",
+          "words": 500,
+          "tags": ["core", "frequency"],
+          "updated": "2026-02-18",
+          "popularity": 90,
+          "description": "入门基础：高频词 + 简短语境。",
+          "csv": {
+            "url": "https://USERNAME.github.io/lexlet-library/en-zh/core-a1.csv",
+            "format": "word,translation,context"
+          }
+        }
+      ]
+    },
+    {
+      "id": "de",
+      "title": "German",
+      "nativeName": "Deutsch",
+      "packs": [
+        {
+          "id": "core-a1",
+          "title": "A1 • Core (500)",
+          "level": "A1",
+          "topic": "core",
+          "group": "Start here",
+          "words": 500,
+          "tags": ["core", "frequency"],
+          "updated": "2026-02-18",
+          "popularity": 90,
+          "description": "Startpaket: häufige Wörter + kurzer Kontext.",
+          "csv": {
+            "url": "https://USERNAME.github.io/lexlet-library/en-de/core-a1.csv",
+            "format": "word,translation,context"
+          }
+        }
+      ]
+    }
   ]
 }
