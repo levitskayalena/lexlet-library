@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Lexlet Library</title>
+  <meta name="description" content="Наборы CSV для Lexlet: слово — перевод — контекст. Скачай и импортируй в приложение." />
+
+  <style>
+    :root{
+      --bg:#0b0c10; --card:#11131a; --muted:#a7adbf; --text:#eef0f6;
+      --accent:#6ee7ff; --accent2:#a78bfa; --border:rgba(255,255,255,.10);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+      --max: 980px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Arial, sans-serif;
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f6f7fb; --card:#ffffff; --muted:#5b6275; --text:#0f172a;
+        --accent:#007aff; --accent2:#7c3aed; --border:rgba(15,23,42,.10);
+        --shadow: 0 10px 30px rgba(2,6,23,.08);
+      }
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:var(--sans); background:radial-gradient(1200px 600px at 10% -10%, rgba(110,231,255,.25), transparent 55%),
+      radial-gradient(900px 500px at 90% 0%, rgba(167,139,250,.25), transparent 55%),
+      var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
+    a{color:inherit; text-decoration:none}
+    .wrap{max-width:var(--max); margin:0 auto; padding:20px 16px 44px;}
+    header{
+      display:flex; gap:14px; align-items:flex-start; justify-content:space-between;
+      padding:18px 16px; border:1px solid var(--border); background:rgba(255,255,255,.02);
+      border-radius:var(--radius); box-shadow:var(--shadow); backdrop-filter: blur(10px);
+    }
+    .brand{display:flex; gap:12px; align-items:center;}
+    .logo{
+      width:44px; height:44px; border-radius:14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 10px 25px rgba(0,0,0,.18);
+      flex:0 0 auto;
+    }
+    h1{margin:0; font-size:18px; letter-spacing:.2px}
+    .sub{margin:4px 0 0; color:var(--muted); font-size:13px; line-height:1.35}
+    .pillrow{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+    .pill{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:8px 10px; border-radius:999px; border:1px solid var(--border);
+      background:rgba(255,255,255,.03); color:var(--muted); font-size:12px;
+    }
+    .pill b{color:var(--text); font-weight:600}
+    .toolbar{
+      margin-top:14px;
+      display:grid; grid-template-columns: 1fr; gap:10px;
+    }
+    @media(min-width:740px){
+      .toolbar{grid-template-columns: 1.3fr .7fr;}
+    }
+    .search, .select{
+      border:1px solid var(--border); border-radius:14px; background:rgba(255,255,255,.03);
+      padding:12px 12px; box-shadow:var(--shadow);
+    }
+    .search input{
+      width:100%; border:none; outline:none; background:transparent; color:var(--text);
+      font-size:14px;
+    }
+    .hint{margin-top:6px; font-size:12px; color:var(--muted)}
+    .select{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+    }
+    .select label{font-size:12px; color:var(--muted)}
+    .select select{
+      width:100%; border:1px solid var(--border); border-radius:12px;
+      background:transparent; color:var(--text);
+      padding:10px 10px; font-size:14px; outline:none;
+    }
+
+    .tabs{
+      margin-top:14px;
+      display:flex; gap:8px; flex-wrap:wrap;
+    }
+    .tab{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      padding:10px 12px; border-radius:999px;
+      font-size:13px; color:var(--muted);
+      display:inline-flex; gap:8px; align-items:center;
+      cursor:pointer; user-select:none;
+      transition:.15s transform ease, .15s opacity ease;
+    }
+    .tab:hover{transform: translateY(-1px)}
+    .tab.active{
+      color:var(--text);
+      background: linear-gradient(135deg, rgba(110,231,255,.16), rgba(167,139,250,.16));
+      border-color: rgba(110,231,255,.28);
+    }
+    .count{
+      font-family:var(--mono);
+      font-size:12px;
+      padding:2px 6px; border-radius:999px;
+      border:1px solid var(--border);
+      color:var(--muted);
+    }
+
+    main{margin-top:14px;}
+    .grid{
+      display:grid; gap:12px;
+      grid-template-columns: 1fr;
+    }
+    @media(min-width:740px){
+      .grid{grid-template-columns: 1fr 1fr;}
+    }
+    .card{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px 14px 12px;
+      display:flex; flex-direction:column; gap:10px;
+      min-height: 150px;
+    }
+    .topline{
+      display:flex; gap:10px; align-items:flex-start; justify-content:space-between;
+    }
+    .title{margin:0; font-size:15px; line-height:1.25}
+    .meta{
+      display:flex; gap:8px; flex-wrap:wrap;
+      margin-top:6px;
+    }
+    .chip{
+      font-size:12px; color:var(--muted);
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:999px; padding:6px 8px;
+      display:inline-flex; gap:6px; align-items:center;
+    }
+    .desc{margin:0; color:var(--muted); font-size:13px; line-height:1.4}
+    .actions{
+      margin-top:auto;
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      font-size:13px;
+      cursor:pointer;
+      transition:.15s transform ease, .15s opacity ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn.primary{
+      border-color: rgba(110,231,255,.35);
+      background: linear-gradient(135deg, rgba(110,231,255,.18), rgba(167,139,250,.18));
+    }
+    .btn small{
+      font-family:var(--mono);
+      font-size:11px;
+      color:var(--muted);
+    }
+
+    .footer{
+      margin-top:18px;
+      color:var(--muted);
+      font-size:12px;
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      padding:10px 4px 0;
+    }
+    .mono{font-family:var(--mono)}
+    .status{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px dashed var(--border);
+      color:var(--muted);
+      background:rgba(255,255,255,.02);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Lexlet Library</h1>
+          <p class="sub">Наборы CSV для Lexlet: <span class="mono">word, translation, context</span>. Скачай файл и импортируй в приложении.</p>
+        </div>
+      </div>
+
+      <div class="pillrow" aria-label="meta">
+        <div class="pill">Формат: <b>CSV</b></div>
+        <div class="pill">Индекс: <b class="mono">index.json</b></div>
+        <div class="pill">Обновление: <b id="updatedAt">—</b></div>
+      </div>
+    </header>
+
+    <section class="toolbar">
+      <div class="search">
+        <input id="q" type="search" placeholder="Поиск по названию, теме, уровню, тегам…" autocomplete="off" />
+        <div class="hint">Примеры: <span class="mono">A1</span>, <span class="mono">travel</span>, <span class="mono">verbs</span>, <span class="mono">business</span></div>
+      </div>
+
+      <div class="select">
+        <div style="flex:1;">
+          <label for="sort">Сортировка</label>
+          <select id="sort">
+            <option value="pop">сначала популярные</option>
+            <option value="new">сначала новые</option>
+            <option value="words">по количеству слов</option>
+            <option value="title">по названию</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <nav class="tabs" id="tabs" aria-label="languages"></nav>
+
+    <main>
+      <div id="status" class="status">Загружаю библиотеку…</div>
+      <div class="grid" id="grid" hidden></div>
+    </main>
+
+    <div class="footer">
+      <div>© <span id="year"></span> Lexlet</div>
+      <div class="mono">Проблема/идея: открой Issue в репозитории</div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const INDEX_URL = "index.json"; // лежит рядом с index.html
+  const elTabs = document.getElementById("tabs");
+  const elGrid = document.getElementById("grid");
+  const elStatus = document.getElementById("status");
+  const elQ = document.getElementById("q");
+  const elSort = document.getElementById("sort");
+  const elUpdated = document.getElementById("updatedAt");
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  let index = null;
+  let activeLang = null; // language id
+  let allItems = []; // flattened items
+
+  const esc = (s) => (s ?? "").toString()
+    .replaceAll("&","&amp;").replaceAll("<","&lt;")
+    .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+
+  const norm = (s) => (s ?? "").toString().trim().toLowerCase();
+
+  function buildTabs(languages) {
+    elTabs.innerHTML = "";
+    languages.forEach((lang) => {
+      const btn = document.createElement("button");
+      btn.className = "tab";
+      btn.type = "button";
+      btn.dataset.lang = lang.id;
+      btn.innerHTML = `${esc(lang.title)} <span class="count" id="count-${esc(lang.id)}">0</span>`;
+      btn.addEventListener("click", () => {
+        activeLang = lang.id;
+        [...elTabs.children].forEach(x => x.classList.toggle("active", x.dataset.lang === activeLang));
+        render();
+        // сохраняем выбранный язык в URL
+        const url = new URL(window.location.href);
+        url.searchParams.set("lang", activeLang);
+        history.replaceState(null, "", url.toString());
+      });
+      elTabs.appendChild(btn);
+    });
+  }
+
+  function flatten(index) {
+    const items = [];
+    for (const lang of index.languages) {
+      for (const pack of (lang.packs || [])) {
+        items.push({
+          langId: lang.id,
+          langTitle: lang.title,
+          id: pack.id,
+          title: pack.title,
+          level: pack.level || "",
+          topic: pack.topic || "",
+          words: pack.words || null,
+          updated: pack.updated || null,
+          url: pack.url,
+          description: pack.description || "",
+          tags: pack.tags || [],
+          popularity: pack.popularity ?? 0
+        });
+      }
+    }
+    return items;
+  }
+
+  function filtered() {
+    const q = norm(elQ.value);
+    let items = allItems.filter(x => x.langId === activeLang);
+
+    if (q) {
+      items = items.filter(x => {
+        const hay = [
+          x.title, x.level, x.topic, x.description,
+          (x.tags || []).join(" "),
+          x.langTitle
+        ].map(norm).join(" | ");
+        return hay.includes(q);
+      });
+    }
+    return items;
+  }
+
+  function sortItems(items) {
+    const mode = elSort.value;
+    const copy = [...items];
+
+    if (mode === "pop") copy.sort((a,b) => (b.popularity||0) - (a.popularity||0));
+    if (mode === "new") copy.sort((a,b) => (norm(b.updated)).localeCompare(norm(a.updated)));
+    if (mode === "words") copy.sort((a,b) => (b.words||0) - (a.words||0));
+    if (mode === "title") copy.sort((a,b) => norm(a.title).localeCompare(norm(b.title)));
+
+    return copy;
+  }
+
+  function chip(label) {
+    return `<span class="chip">${esc(label)}</span>`;
+  }
+
+  function render() {
+    const items0 = filtered();
+    const items = sortItems(items0);
+
+    // counts per language
+    for (const lang of index.languages) {
+      const c = allItems.filter(x => x.langId === lang.id).length;
+      const el = document.getElementById(`count-${lang.id}`);
+      if (el) el.textContent = c;
+    }
+
+    if (!items.length) {
+      elGrid.hidden = true;
+      elStatus.hidden = false;
+      elStatus.textContent = "Ничего не найдено. Попробуй другой запрос или язык.";
+      return;
+    }
+
+    elStatus.hidden = true;
+    elGrid.hidden = false;
+
+    elGrid.innerHTML = items.map(x => {
+      const meta = []
+        .concat(x.level ? [chip(`Уровень: ${x.level}`)] : [])
+        .concat(x.topic ? [chip(`Тема: ${x.topic}`)] : [])
+        .concat(Number.isFinite(x.words) ? [chip(`Слов: ${x.words}`)] : [])
+        .concat(x.updated ? [chip(`Обновлено: ${x.updated}`)] : [])
+        .concat((x.tags || []).slice(0,3).map(t => chip(`#${t}`)));
+
+      const fileName = (x.url || "").split("/").pop();
+
+      return `
+        <article class="card">
+          <div class="topline">
+            <div style="min-width:0;">
+              <h3 class="title">${esc(x.title)}</h3>
+              <div class="meta">${meta.join("")}</div>
+            </div>
+          </div>
+          ${x.description ? `<p class="desc">${esc(x.description)}</p>` : `<p class="desc">CSV-набор для импорта в Lexlet.</p>`}
+          <div class="actions">
+            <a class="btn primary" href="${esc(x.url)}" download>
+              Скачать CSV <small class="mono">${esc(fileName)}</small>
+            </a>
+            <button class="btn" type="button" data-copy="${esc(x.url)}">Скопировать ссылку</button>
+          </div>
+        </article>
+      `;
+    }).join("");
+
+    // copy handlers
+    elGrid.querySelectorAll("[data-copy]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const url = btn.getAttribute("data-copy");
+        try {
+          await navigator.clipboard.writeText(url);
+          btn.textContent = "Скопировано ✓";
+          setTimeout(() => btn.textContent = "Скопировать ссылку", 1200);
+        } catch {
+          // fallback
+          prompt("Скопируй ссылку:", url);
+        }
+      });
+    });
+  }
+
+  async function init() {
+    try {
+      const res = await fetch(INDEX_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to load index.json");
+      index = await res.json();
+
+      allItems = flatten(index);
+
+      // updatedAt
+      elUpdated.textContent = index.updatedAt || "—";
+
+      buildTabs(index.languages);
+
+      // initial language: from URL or first
+      const url = new URL(window.location.href);
+      const fromUrl = url.searchParams.get("lang");
+      activeLang = (index.languages.some(l => l.id === fromUrl) ? fromUrl : index.languages[0]?.id);
+
+      // set active class
+      [...elTabs.children].forEach(x => x.classList.toggle("active", x.dataset.lang === activeLang));
+
+      // listeners
+      elQ.addEventListener("input", render);
+      elSort.addEventListener("change", render);
+
+      render();
+    } catch (e) {
+      elGrid.hidden = true;
+      elStatus.hidden = false;
+      elStatus.textContent = "Не получилось загрузить index.json. Проверь, что файл лежит рядом с index.html и GitHub Pages включён.";
+      console.error(e);
+    }
+  }
+
+  init();
+})();
+</script>
+
+</body>
+</html>
