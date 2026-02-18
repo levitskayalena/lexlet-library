@@ -1,69 +1,32 @@
 {
-  "version": 1,
+  "schemaVersion": 2,
+  "targetLanguage": "en",
   "updatedAt": "2026-02-18",
-  "languages": [
-    {
-      "id": "en",
-      "title": "English",
-      "packs": [
-        {
-          "id": "en-a1-core",
-          "title": "A1 Core • 500 words",
-          "level": "A1",
-          "topic": "core",
-          "words": 500,
-          "updated": "2026-02-18",
-          "popularity": 100,
-          "tags": ["a1", "core"],
-          "description": "База для старта: самые частотные слова + короткий контекст.",
-          "url": "https://USERNAME.github.io/lexlet-library/en/a1-core.csv"
-        },
-        {
-          "id": "en-travel-a2",
-          "title": "Travel • A2",
-          "level": "A2",
-          "topic": "travel",
-          "words": 320,
-          "updated": "2026-02-18",
-          "popularity": 60,
-          "tags": ["travel", "phrases"],
-          "description": "Поездки, аэропорт, отель, еда, диалоги.",
-          "url": "https://USERNAME.github.io/lexlet-library/en/travel-a2.csv"
-        }
-      ]
-    },
+  "uiLocales": [
     {
       "id": "ru",
       "title": "Русский",
+      "nativeName": "Русский",
       "packs": [
         {
-          "id": "ru-a1-core",
-          "title": "A1 База • 400 слов",
+          "id": "core-a1",
+          "title": "A1 • Core",
           "level": "A1",
           "topic": "core",
-          "words": 400,
+          "words": 500,
+          "tags": ["core", "frequency"],
           "updated": "2026-02-18",
-          "popularity": 40,
-          "tags": ["a1", "core"],
-          "description": "Для начинающих: базовые слова + контекст.",
-          "url": "https://USERNAME.github.io/lexlet-library/ru/a1-core.csv"
+          "popularity": 100,
+          "csv": {
+            "url": "https://USERNAME.github.io/lexlet-library/en-ru/core-a1.csv",
+            "format": "word,translation,context"
+          }
         }
       ]
     },
-    {
-      "id": "es",
-      "title": "Español",
-      "packs": []
-    },
-    {
-      "id": "fr",
-      "title": "Français",
-      "packs": []
-    },
-    {
-      "id": "zh",
-      "title": "中文",
-      "packs": []
-    }
+    { "id": "fr", "title": "Français", "nativeName": "Français", "packs": [] },
+    { "id": "es", "title": "Español", "nativeName": "Español", "packs": [] },
+    { "id": "zh", "title": "中文", "nativeName": "中文", "packs": [] },
+    { "id": "de", "title": "Deutsch", "nativeName": "Deutsch", "packs": [] }
   ]
 }
