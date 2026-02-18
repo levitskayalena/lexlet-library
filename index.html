@@ -215,7 +215,7 @@ h1{
 
     <!-- 2) header with icon + title + short description -->
     <div class="header">
-      <img class="icon" src="assets/lexlet-app.png" alt="Lexlet icon" onerror="this.style.display='none';" />
+      <img class="icon" src="assets/lexlet_app.png" alt="Lexlet icon" onerror="this.style.display='none';" />
       <div>
         <h1>Lexlet Library</h1>
         <p class="subtitle">Готовые наборы карточек для изучения английского. Выбирай уровень и тему — скачивай и добавляй в приложение.</p>
@@ -242,6 +242,54 @@ h1{
   const elQ = document.getElementById("q");
   const elLangBtns = [...document.querySelectorAll(".langbtn")];
 
+  // Если хочешь — можно сделать эти элементы id-шниками и менять тексты точечно.
+  // Сейчас меняем subtitle через поиск .subtitle в шапке.
+  const elSubtitle = document.querySelector(".subtitle");
+  const elFooter = document.querySelector("footer");
+
+  const I18N = {
+    ru: {
+      subtitle: "Готовые наборы карточек для изучения английского. Выбирай уровень и тему — скачивай и добавляй в приложение.",
+      searchPlaceholder: "Поиск по названию или теме",
+      download: "Скачать",
+      empty: "Ничего не найдено.",
+      footer: "Идеи и баги — через Issues в репозитории.",
+      words: "слов"
+    },
+    fr: {
+      subtitle: "Packs prêts pour apprendre l’anglais. Choisis un niveau et un thème — télécharge et ajoute dans l’app.",
+      searchPlaceholder: "Recherche par titre ou thème",
+      download: "Télécharger",
+      empty: "Aucun résultat.",
+      footer: "Idées et bugs — via Issues du dépôt.",
+      words: "mots"
+    },
+    es: {
+      subtitle: "Packs listos para aprender inglés. Elige nivel y tema — descarga y añade a la app.",
+      searchPlaceholder: "Buscar por nombre o tema",
+      download: "Descargar",
+      empty: "No se encontró nada.",
+      footer: "Ideas y bugs — en Issues del repositorio.",
+      words: "palabras"
+    },
+    zh: {
+      subtitle: "用于学习英语的现成卡组。选择等级和主题 — 下载并添加到应用中。",
+      searchPlaceholder: "按名称或主题搜索",
+      download: "下载",
+      empty: "没有结果。",
+      footer: "想法和问题 — 在仓库 Issues 里提。",
+      words: "词"
+    },
+    de: {
+      subtitle: "Fertige Sets zum Englischlernen. Wähle Level und Thema — herunterladen und in der App hinzufügen.",
+      searchPlaceholder: "Suche nach Titel oder Thema",
+      download: "Herunterladen",
+      empty: "Keine Ergebnisse.",
+      footer: "Ideen & Bugs — über Issues im Repository.",
+      words: "Wörter"
+    }
+  };
+
   let index = null;
   let activeLocale = "ru";
   let packs = [];
@@ -251,9 +299,18 @@ h1{
     .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
     .replaceAll('"',"&quot;").replaceAll("'","&#039;");
 
+  function applyLocaleTexts(localeId){
+    const t = I18N[localeId] || I18N.ru;
+    if (elSubtitle) elSubtitle.textContent = t.subtitle;
+    if (elFooter) elFooter.textContent = t.footer;
+    elQ.placeholder = t.searchPlaceholder;
+    // empty text will be set inside render(), but set baseline:
+    elEmpty.textContent = t.empty;
+  }
+
   function getLocalePacks(localeId){
     const loc = (index?.uiLocales || []).find(x => x.id === localeId);
-    const arr = (loc?.packs || []).map(p => ({
+    return (loc?.packs || []).map(p => ({
       id: p.id,
       title: p.title,
       level: p.level || "",
@@ -263,30 +320,27 @@ h1{
       url: p.csv?.url || p.url,
       tags: p.tags || []
     }));
-    return arr;
   }
 
   function filterPacks(arr){
     const q = norm(elQ.value);
     if (!q) return arr;
     return arr.filter(x => {
-      const hay = [
-        x.title,
-        x.topic,
-        x.level
-        // tags есть, но пока не используем активно
-      ].map(norm).join(" | ");
+      const hay = [x.title, x.topic, x.level].map(norm).join(" | ");
       return hay.includes(q);
     });
   }
 
   function render(){
+    const t = I18N[activeLocale] || I18N.ru;
+
     packs = getLocalePacks(activeLocale);
     const shown = filterPacks(packs);
 
     if (!shown.length){
       elList.hidden = true;
       elEmpty.hidden = false;
+      elEmpty.textContent = t.empty;
       return;
     }
 
@@ -298,20 +352,22 @@ h1{
         <div class="itemTop">
           <div class="titleRow">
             <h3 class="title">
+              ${p.level ? `<span class="level">${esc(p.level)}</span>` : ""}
               ${esc(p.title)}
             </h3>
           </div>
         </div>
+
         <div class="divider"></div>
+
         <div class="descRow">
-          <p class="desc">${esc(p.description || "Набор карточек для практики английского.")}</p>
-          <a class="btn primary" href="${esc(p.url)}" download>Скачать</a>
+          <p class="desc">${esc(p.description || "Card pack for English practice.")}</p>
+          <a class="btn primary" href="${esc(p.url)}" download>${esc(t.download)}</a>
         </div>
 
         <div class="meta">
           <span>EN → ${esc(activeLocale.toUpperCase())}</span>
-           ${p.level ? `<span>${esc(p.level)}</span>` : ""}
-          ${Number.isFinite(p.words) ? `<span>${esc(p.words)} слов</span>` : ""}
+          ${Number.isFinite(p.words) ? `<span>${esc(p.words)} ${esc(t.words)}</span>` : ""}
         </div>
       </div>
     `).join("");
@@ -321,7 +377,7 @@ h1{
     activeLocale = localeId;
     elLangBtns.forEach(b => b.classList.toggle("active", b.dataset.locale === localeId));
 
-    // пока делаем RU-only: для остальных покажем пустоту (позже добавим i18n)
+    applyLocaleTexts(activeLocale);
     elQ.value = "";
     render();
 
@@ -334,18 +390,13 @@ h1{
     try{
       const res = await fetch(INDEX_URL, { cache: "no-store" });
       index = await res.json();
-
-      // поддержка старого ключа "languages" на всякий
       if (!index.uiLocales && index.languages) index.uiLocales = index.languages;
 
       const url = new URL(window.location.href);
       const fromUrl = url.searchParams.get("locale");
       if (fromUrl) activeLocale = fromUrl;
 
-      elLangBtns.forEach(btn => {
-        btn.addEventListener("click", () => setLocale(btn.dataset.locale));
-      });
-
+      elLangBtns.forEach(btn => btn.addEventListener("click", () => setLocale(btn.dataset.locale)));
       elQ.addEventListener("input", render);
 
       setLocale(activeLocale);
