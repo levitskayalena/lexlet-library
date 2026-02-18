@@ -1,724 +1,340 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light dark" />
   <title>Lexlet Library</title>
-  <meta name="description" content="Download English flashcard CSV packs for Lexlet (EN → your language)." />
 
   <style>
     :root{
-      --bg:#0b0c10; --card:#11131a; --muted:#a7adbf; --text:#eef0f6;
-      --accent:#6ee7ff; --accent2:#a78bfa; --border:rgba(255,255,255,.10);
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius: 18px;
-      --max: 1000px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Arial, sans-serif;
-    }
-    @media (prefers-color-scheme: light){
-      :root{
-        --bg:#f6f7fb; --card:#ffffff; --muted:#5b6275; --text:#0f172a;
-        --accent:#007aff; --accent2:#7c3aed; --border:rgba(15,23,42,.10);
-        --shadow: 0 10px 30px rgba(2,6,23,.08);
-      }
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family:var(--sans);
-      background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(110,231,255,.25), transparent 55%),
-        radial-gradient(900px 500px at 90% 0%, rgba(167,139,250,.25), transparent 55%),
-        var(--bg);
-      color:var(--text);
-      min-height:100vh;
-    }
-    a{color:inherit; text-decoration:none}
-    .wrap{max-width:var(--max); margin:0 auto; padding:20px 16px 44px;}
+  --bg: #ECE6D9;
+  --paper: #EEE6DC;
+  --text: #1A1A1A;
+  --muted: rgba(26,26,26,.55);
+  --border: rgba(26,26,26,.12);
+  --accent: #D26759;
 
-    header{
-      display:flex; gap:14px; align-items:flex-start; justify-content:space-between;
-      padding:18px 16px; border:1px solid var(--border); background:rgba(255,255,255,.02);
-      border-radius:var(--radius); box-shadow:var(--shadow); backdrop-filter: blur(10px);
-    }
-    .brand{display:flex; gap:12px; align-items:center; min-width:0;}
-    .logo{
-      width:44px; height:44px; border-radius:14px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      box-shadow: 0 10px 25px rgba(0,0,0,.18);
-      flex:0 0 auto;
-    }
-    h1{margin:0; font-size:18px; letter-spacing:.2px}
-    .sub{margin:4px 0 0; color:var(--muted); font-size:13px; line-height:1.35}
-    .pillrow{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
-    .pill{
-      display:inline-flex; gap:8px; align-items:center;
-      padding:8px 10px; border-radius:999px; border:1px solid var(--border);
-      background:rgba(255,255,255,.03); color:var(--muted); font-size:12px;
-      white-space:nowrap;
-    }
-    .pill b{color:var(--text); font-weight:600}
-    .mono{font-family:var(--mono)}
-    .row{
-      margin-top:14px;
-      display:grid; grid-template-columns: 1fr; gap:10px;
-    }
-    @media(min-width:760px){
-      .row{grid-template-columns: 1.3fr .7fr;}
-    }
-    .panel{
-      border:1px solid var(--border); border-radius:14px; background:rgba(255,255,255,.03);
-      padding:12px 12px; box-shadow:var(--shadow);
-    }
-    .search input{
-      width:100%; border:none; outline:none; background:transparent; color:var(--text);
-      font-size:14px;
-    }
-    .hint{margin-top:6px; font-size:12px; color:var(--muted)}
-    .select{display:flex; gap:10px; align-items:center; justify-content:space-between;}
-    .select label{font-size:12px; color:var(--muted)}
-    .select select{
-      width:100%; border:1px solid var(--border); border-radius:12px;
-      background:transparent; color:var(--text);
-      padding:10px 10px; font-size:14px; outline:none;
-    }
+  --radius: 14px;
+  --max: 760px;
 
-    .tabs{
-      margin-top:14px;
-      display:flex; gap:8px; flex-wrap:wrap;
-    }
-    .tab{
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.03);
-      padding:10px 12px; border-radius:999px;
-      font-size:13px; color:var(--muted);
-      display:inline-flex; gap:8px; align-items:center;
-      cursor:pointer; user-select:none;
-      transition:.15s transform ease, .15s opacity ease;
-    }
-    .tab:hover{transform: translateY(-1px)}
-    .tab.active{
-      color:var(--text);
-      background: linear-gradient(135deg, rgba(110,231,255,.16), rgba(167,139,250,.16));
-      border-color: rgba(110,231,255,.28);
-    }
-    .count{
-      font-family:var(--mono);
-      font-size:12px;
-      padding:2px 6px; border-radius:999px;
-      border:1px solid var(--border);
-      color:var(--muted);
-    }
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+               "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
 
-    main{margin-top:14px;}
-    .group{margin-top:14px;}
-    .grouphead{
-      display:flex; align-items:flex-end; justify-content:space-between; gap:10px;
-      margin:6px 2px 10px;
-    }
-    .grouphead h2{
-      margin:0; font-size:14px; letter-spacing:.2px;
-    }
-    .grouphead p{
-      margin:0; font-size:12px; color:var(--muted);
-    }
-    .grid{
-      display:grid; gap:12px;
-      grid-template-columns: 1fr;
-    }
-    @media(min-width:760px){
-      .grid{grid-template-columns: 1fr 1fr;}
-    }
+*{ box-sizing:border-box; }
 
-    .card{
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.03);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:14px 14px 12px;
-      display:flex; flex-direction:column; gap:10px;
-      min-height: 160px;
-    }
-    .title{margin:0; font-size:15px; line-height:1.25}
-    .meta{
-      display:flex; gap:8px; flex-wrap:wrap;
-      margin-top:6px;
-    }
-    .chip{
-      font-size:12px; color:var(--muted);
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.03);
-      border-radius:999px; padding:6px 8px;
-      display:inline-flex; gap:6px; align-items:center;
-      white-space:nowrap;
-    }
-    .desc{margin:0; color:var(--muted); font-size:13px; line-height:1.4}
-    .actions{
-      margin-top:auto;
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
-    }
-    .btn{
-      display:inline-flex; align-items:center; justify-content:center;
-      gap:8px;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.03);
-      font-size:13px;
-      cursor:pointer;
-      transition:.15s transform ease, .15s opacity ease;
-    }
-    .btn:hover{transform:translateY(-1px)}
-    .btn.primary{
-      border-color: rgba(110,231,255,.35);
-      background: linear-gradient(135deg, rgba(110,231,255,.18), rgba(167,139,250,.18));
-    }
-    .btn small{
-      font-family:var(--mono);
-      font-size:11px;
-      color:var(--muted);
-    }
+body{
+  margin:0;
+  background: var(--bg);
+  color: var(--text);
+}
 
-    .status{
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px dashed var(--border);
-      color:var(--muted);
-      background:rgba(255,255,255,.02);
-    }
+.wrap{
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+}
 
-    .footer{
-      margin-top:18px;
-      color:var(--muted);
-      font-size:12px;
-      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
-      padding:10px 4px 0;
-    }
-    .kbd{
-      font-family:var(--mono);
-      border:1px solid var(--border);
-      padding:2px 6px;
-      border-radius:8px;
-      background:rgba(255,255,255,.03);
-      color:var(--muted);
-      font-size:12px;
-      white-space:nowrap;
-    }
+/* language */
+.langbar{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom: 16px;
+}
+.langbtn{
+  border:none;
+  background: transparent;
+  color: var(--muted);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  cursor:pointer;
+}
+.langbtn.active{
+  color: var(--text);
+  background: rgba(210,103,89,.12);
+}
+
+/* header */
+.header{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  padding: 18px;
+  background: var(--paper);
+  border-radius: var(--radius);
+}
+
+.icon{
+  width:48px;
+  height:48px;
+  border-radius:12px;
+  object-fit:cover;
+}
+
+h1{
+  margin:0;
+  font-size:18px;
+  font-weight:600;
+}
+
+.subtitle{
+  margin:6px 0 0;
+  font-size:14px;
+  color: var(--muted);
+  line-height:1.4;
+}
+
+/* search */
+.search{
+  margin-top:16px;
+  padding:12px 14px;
+  background: var(--paper);
+  border-radius: var(--radius);
+}
+.search input{
+  width:100%;
+  border:none;
+  outline:none;
+  background: transparent;
+  color: var(--text);
+  font-size:14px;
+}
+
+/* list */
+.list{
+  margin-top:16px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.item{
+  padding:16px;
+  background: var(--paper);
+  border-radius: var(--radius);
+}
+
+.title{
+  margin:0;
+  font-size:15px;
+  font-weight:500;
+}
+
+.level{
+  font-size:12px;
+  color: var(--muted);
+  margin-right:8px;
+}
+
+.descRow{
+  margin-top:10px;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+}
+
+.desc{
+  margin:0;
+  font-size:14px;
+  color: var(--muted);
+  line-height:1.4;
+  flex:1;
+}
+
+.btn{
+  border:none;
+  background: var(--accent);
+  color:white;
+  padding:8px 14px;
+  border-radius:10px;
+  font-size:13px;
+  cursor:pointer;
+  transition: opacity .15s ease;
+}
+.btn:hover{
+  opacity:.85;
+}
+
+.meta{
+  margin-top:12px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  font-size:12px;
+  color: var(--muted);
+}
+
+.meta span{
+  background: rgba(26,26,26,.06);
+  padding:4px 8px;
+  border-radius:999px;
+}
+
+.empty{
+  margin-top:16px;
+  font-size:14px;
+  color: var(--muted);
+}
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <header>
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div style="min-width:0;">
-          <h1 id="t_title">Lexlet Library</h1>
-          <p class="sub" id="t_sub">Download CSV packs to learn English (EN → your language). Import them into Lexlet.</p>
-        </div>
-      </div>
 
-      <div class="pillrow" aria-label="meta">
-        <div class="pill"><span id="t_targetLabel">Target</span>: <b class="mono">EN</b></div>
-        <div class="pill">Index: <b class="mono">index.json</b></div>
-        <div class="pill"><span id="t_updatedLabel">Updated</span>: <b id="updatedAt">—</b></div>
-      </div>
-    </header>
-
-    <section class="row">
-      <div class="panel search">
-        <input id="q" type="search" placeholder="" autocomplete="off" />
-        <div class="hint" id="t_hint"></div>
-      </div>
-
-      <div class="panel select">
-        <div style="flex:1;">
-          <label for="sort" id="t_sortLabel">Sort</label>
-          <select id="sort">
-            <option value="pop" id="t_sort_pop">popular first</option>
-            <option value="new" id="t_sort_new">newest first</option>
-            <option value="words" id="t_sort_words">by words</option>
-            <option value="title" id="t_sort_title">by title</option>
-          </select>
-        </div>
-      </div>
-    </section>
-
-    <nav class="tabs" id="tabs" aria-label="locales"></nav>
-
-    <main>
-      <div class="panel" style="margin-top:14px;">
-        <div class="hint" style="margin:0;" id="t_how">
-          Download a CSV pack → import in Lexlet. Format: <span class="kbd">word, translation, context</span>.
-        </div>
-      </div>
-
-      <div id="status" class="status" style="margin-top:12px;">Loading library…</div>
-      <div id="groups"></div>
-    </main>
-
-    <div class="footer">
-      <div>© <span id="year"></span> Lexlet</div>
-      <div class="mono" id="t_footer">Tip: open an Issue in the repo for ideas & fixes</div>
+    <!-- 1) language first -->
+    <div class="langbar" aria-label="Language">
+      <button class="langbtn active" data-locale="ru">Русский</button>
+      <button class="langbtn" data-locale="fr">Français</button>
+      <button class="langbtn" data-locale="es">Español</button>
+      <button class="langbtn" data-locale="zh">中文</button>
+      <button class="langbtn" data-locale="de">Deutsch</button>
     </div>
+
+    <!-- 2) header with icon + title + short description -->
+    <div class="header">
+      <img class="icon" src="assets/app-icon.png" alt="Lexlet icon" onerror="this.style.display='none';" />
+      <div>
+        <h1>Lexlet Library</h1>
+        <p class="subtitle">Готовые наборы карточек для изучения английского. Выбирай уровень и тему — скачивай и добавляй в приложение.</p>
+      </div>
+    </div>
+
+    <!-- 3) search -->
+    <div class="search">
+      <input id="q" type="search" placeholder="Поиск по названию или теме" autocomplete="off" />
+    </div>
+
+    <!-- 4) packs -->
+    <div id="list" class="list" hidden></div>
+    <div id="empty" class="empty" hidden>Ничего не найдено.</div>
+
+    <footer>Идеи и баги — через Issues в репозитории.</footer>
   </div>
 
 <script>
 (() => {
   const INDEX_URL = "index.json";
 
-  // UI strings per user locale (tabs)
-  const I18N = {
-    ru: {
-      title: "Lexlet Library",
-      sub: "Скачай CSV-наборы для изучения английского (EN → RU). Импортируй в Lexlet.",
-      targetLabel: "Цель",
-      updatedLabel: "Обновлено",
-      searchPh: "Поиск по уровню/теме/названию…",
-      hint: "Примеры: A1, travel, verbs, business",
-      sort: "Сортировка",
-      sort_pop: "сначала популярные",
-      sort_new: "сначала новые",
-      sort_words: "по количеству слов",
-      sort_title: "по названию",
-      how: "Скачай CSV → импортируй в Lexlet. Формат: word, translation, context.",
-      empty: "Ничего не найдено. Попробуй другой запрос или другую вкладку.",
-      loading: "Загружаю библиотеку…",
-      download: "Скачать CSV",
-      copy: "Скопировать ссылку",
-      copied: "Скопировано ✓",
-      copyFallback: "Скопируй ссылку:",
-      words: "Слов",
-      level: "Уровень",
-      topic: "Тема",
-      updated: "Обновлено",
-      startHere: "Start here",
-      themes: "Themes",
-      grammar: "Grammar",
-      other: "Other",
-      footer: "Подсказка: идеи и баги — через Issue в репозитории"
-    },
-    fr: {
-      title: "Bibliothèque Lexlet",
-      sub: "Télécharge des packs CSV pour apprendre l’anglais (EN → FR). Importe-les dans Lexlet.",
-      targetLabel: "Cible",
-      updatedLabel: "Mis à jour",
-      searchPh: "Rechercher par niveau/thème/titre…",
-      hint: "Exemples : A1, travel, verbs, business",
-      sort: "Tri",
-      sort_pop: "populaires d’abord",
-      sort_new: "les plus récents",
-      sort_words: "par nombre de mots",
-      sort_title: "par titre",
-      how: "Télécharge un CSV → importe-le dans Lexlet. Format : word, translation, context.",
-      empty: "Aucun résultat. Essaie une autre recherche ou un autre onglet.",
-      loading: "Chargement…",
-      download: "Télécharger CSV",
-      copy: "Copier le lien",
-      copied: "Copié ✓",
-      copyFallback: "Copie le lien :",
-      words: "Mots",
-      level: "Niveau",
-      topic: "Thème",
-      updated: "Mis à jour",
-      startHere: "Commencer ici",
-      themes: "Thèmes",
-      grammar: "Grammaire",
-      other: "Autre",
-      footer: "Astuce : ouvre une Issue dans le repo pour idées & corrections"
-    },
-    es: {
-      title: "Biblioteca Lexlet",
-      sub: "Descarga packs CSV para aprender inglés (EN → ES). Impórtalos en Lexlet.",
-      targetLabel: "Objetivo",
-      updatedLabel: "Actualizado",
-      searchPh: "Buscar por nivel/tema/título…",
-      hint: "Ejemplos: A1, travel, verbs, business",
-      sort: "Ordenar",
-      sort_pop: "populares primero",
-      sort_new: "más nuevos primero",
-      sort_words: "por número de palabras",
-      sort_title: "por título",
-      how: "Descarga un CSV → impórtalo en Lexlet. Formato: word, translation, context.",
-      empty: "No hay resultados. Prueba otra búsqueda u otra pestaña.",
-      loading: "Cargando…",
-      download: "Descargar CSV",
-      copy: "Copiar enlace",
-      copied: "Copiado ✓",
-      copyFallback: "Copia el enlace:",
-      words: "Palabras",
-      level: "Nivel",
-      topic: "Tema",
-      updated: "Actualizado",
-      startHere: "Empieza aquí",
-      themes: "Temas",
-      grammar: "Gramática",
-      other: "Otros",
-      footer: "Tip: abre un Issue en el repo para ideas y fixes"
-    },
-    zh: {
-      title: "Lexlet 词库",
-      sub: "下载英语学习 CSV 包（EN → 中文），并导入 Lexlet。",
-      targetLabel: "目标",
-      updatedLabel: "更新",
-      searchPh: "按等级/主题/标题搜索…",
-      hint: "示例：A1、travel、verbs、business",
-      sort: "排序",
-      sort_pop: "按热门",
-      sort_new: "按最新",
-      sort_words: "按词量",
-      sort_title: "按标题",
-      how: "下载 CSV → 导入 Lexlet。格式：word, translation, context。",
-      empty: "没有结果。换个关键词或切换语言。",
-      loading: "加载中…",
-      download: "下载 CSV",
-      copy: "复制链接",
-      copied: "已复制 ✓",
-      copyFallback: "复制链接：",
-      words: "词数",
-      level: "等级",
-      topic: "主题",
-      updated: "更新",
-      startHere: "从这里开始",
-      themes: "主题",
-      grammar: "语法",
-      other: "其他",
-      footer: "提示：想法/问题可在仓库提 Issue"
-    },
-    de: {
-      title: "Lexlet Bibliothek",
-      sub: "Lade CSV-Pakete zum Englischlernen herunter (EN → DE) und importiere sie in Lexlet.",
-      targetLabel: "Ziel",
-      updatedLabel: "Aktualisiert",
-      searchPh: "Suche nach Level/Thema/Titel…",
-      hint: "Beispiele: A1, travel, verbs, business",
-      sort: "Sortierung",
-      sort_pop: "beliebt zuerst",
-      sort_new: "neueste zuerst",
-      sort_words: "nach Wortanzahl",
-      sort_title: "nach Titel",
-      how: "CSV herunterladen → in Lexlet importieren. Format: word, translation, context.",
-      empty: "Keine Treffer. Anderen Suchbegriff oder Tab wählen.",
-      loading: "Lade…",
-      download: "CSV herunterladen",
-      copy: "Link kopieren",
-      copied: "Kopiert ✓",
-      copyFallback: "Link kopieren:",
-      words: "Wörter",
-      level: "Level",
-      topic: "Thema",
-      updated: "Aktualisiert",
-      startHere: "Start hier",
-      themes: "Themen",
-      grammar: "Grammatik",
-      other: "Sonstiges",
-      footer: "Tipp: Ideen & Bugs als Issue im Repo melden"
-    }
-  };
-
-  const els = {
-    tabs: document.getElementById("tabs"),
-    groups: document.getElementById("groups"),
-    status: document.getElementById("status"),
-    q: document.getElementById("q"),
-    sort: document.getElementById("sort"),
-    updatedAt: document.getElementById("updatedAt"),
-    year: document.getElementById("year"),
-
-    t_title: document.getElementById("t_title"),
-    t_sub: document.getElementById("t_sub"),
-    t_targetLabel: document.getElementById("t_targetLabel"),
-    t_updatedLabel: document.getElementById("t_updatedLabel"),
-    t_hint: document.getElementById("t_hint"),
-    t_sortLabel: document.getElementById("t_sortLabel"),
-    t_sort_pop: document.getElementById("t_sort_pop"),
-    t_sort_new: document.getElementById("t_sort_new"),
-    t_sort_words: document.getElementById("t_sort_words"),
-    t_sort_title: document.getElementById("t_sort_title"),
-    t_how: document.getElementById("t_how"),
-    t_footer: document.getElementById("t_footer"),
-  };
-
-  els.year.textContent = new Date().getFullYear();
+  const elList = document.getElementById("list");
+  const elEmpty = document.getElementById("empty");
+  const elQ = document.getElementById("q");
+  const elLangBtns = [...document.querySelectorAll(".langbtn")];
 
   let index = null;
-  let activeLocale = null;
-  let allItems = []; // flattened for active locale
-
-  const esc = (s) => (s ?? "").toString()
-    .replaceAll("&","&amp;").replaceAll("<","&lt;")
-    .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  let activeLocale = "ru";
+  let packs = [];
 
   const norm = (s) => (s ?? "").toString().trim().toLowerCase();
+  const esc = (s) => (s ?? "").toString()
+    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
 
-  function applyI18n(localeId){
-    const t = I18N[localeId] || I18N.en || I18N.ru;
-    els.t_title.textContent = t.title;
-    els.t_sub.textContent = t.sub;
-    els.t_targetLabel.textContent = t.targetLabel;
-    els.t_updatedLabel.textContent = t.updatedLabel;
-    els.q.placeholder = t.searchPh;
-    els.t_hint.textContent = t.hint;
-
-    els.t_sortLabel.textContent = t.sort;
-    els.t_sort_pop.textContent = t.sort_pop;
-    els.t_sort_new.textContent = t.sort_new;
-    els.t_sort_words.textContent = t.sort_words;
-    els.t_sort_title.textContent = t.sort_title;
-
-    els.t_how.textContent = t.how;
-    els.t_footer.textContent = t.footer;
-
-    // status messages updated in render()
-  }
-
-  function getLocaleTitle(localeId){
-    const locale = index.uiLocales.find(x => x.id === localeId);
-    return locale?.nativeName || locale?.title || localeId.toUpperCase();
-  }
-
-  function buildTabs(){
-    els.tabs.innerHTML = "";
-    for (const loc of index.uiLocales){
-      const btn = document.createElement("button");
-      btn.className = "tab";
-      btn.type = "button";
-      btn.dataset.locale = loc.id;
-      btn.innerHTML = `${esc(loc.nativeName || loc.title)} <span class="count" id="count-${esc(loc.id)}">0</span>`;
-      btn.addEventListener("click", () => {
-        activeLocale = loc.id;
-        applyI18n(activeLocale);
-        setActiveTab();
-        render();
-        const url = new URL(window.location.href);
-        url.searchParams.set("locale", activeLocale);
-        history.replaceState(null, "", url.toString());
-      });
-      els.tabs.appendChild(btn);
-    }
-  }
-
-  function setActiveTab(){
-    [...els.tabs.children].forEach(x => x.classList.toggle("active", x.dataset.locale === activeLocale));
-  }
-
-  function flattenForLocale(localeId){
-    const loc = index.uiLocales.find(x => x.id === localeId);
-    const packs = (loc?.packs || []).map(p => ({
-      localeId,
-      localeTitle: getLocaleTitle(localeId),
+  function getLocalePacks(localeId){
+    const loc = (index?.uiLocales || []).find(x => x.id === localeId);
+    const arr = (loc?.packs || []).map(p => ({
       id: p.id,
       title: p.title,
       level: p.level || "",
       topic: p.topic || "",
-      group: p.group || "", // optional
       words: Number.isFinite(p.words) ? p.words : null,
-      tags: p.tags || [],
-      updated: p.updated || "",
-      popularity: p.popularity ?? 0,
+      description: p.description || "",
       url: p.csv?.url || p.url,
-      format: p.csv?.format || "word,translation,context",
-      description: p.description || ""
+      tags: p.tags || []
     }));
-    return packs;
+    return arr;
   }
 
-  function getCounts(){
-    for (const loc of index.uiLocales){
-      const c = (loc.packs || []).length;
-      const el = document.getElementById(`count-${loc.id}`);
-      if (el) el.textContent = c;
-    }
-  }
-
-  function filtered(){
-    const q = norm(els.q.value);
-    let items = allItems;
-
-    if (q){
-      items = items.filter(x => {
-        const hay = [
-          x.title, x.level, x.topic, x.group,
-          x.description, (x.tags || []).join(" ")
-        ].map(norm).join(" | ");
-        return hay.includes(q);
-      });
-    }
-    return items;
-  }
-
-  function sortItems(items){
-    const mode = els.sort.value;
-    const copy = [...items];
-    if (mode === "pop") copy.sort((a,b) => (b.popularity||0) - (a.popularity||0));
-    if (mode === "new") copy.sort((a,b) => norm(b.updated).localeCompare(norm(a.updated)));
-    if (mode === "words") copy.sort((a,b) => (b.words||0) - (a.words||0));
-    if (mode === "title") copy.sort((a,b) => norm(a.title).localeCompare(norm(b.title)));
-    return copy;
-  }
-
-  function chip(label){ return `<span class="chip">${esc(label)}</span>`; }
-
-  function groupKey(item){
-    // Priority:
-    // 1) explicit group if provided
-    // 2) topic-based defaults
-    const t = I18N[activeLocale] || I18N.ru;
-
-    if (item.group) return item.group;
-
-    const topic = norm(item.topic);
-    if (["core","basics","starter","start"].includes(topic)) return t.startHere;
-    if (["grammar","verbs","phrasal","irregular"].some(x => topic.includes(x))) return t.grammar;
-    if (topic) return t.themes;
-    return t.other;
+  function filterPacks(arr){
+    const q = norm(elQ.value);
+    if (!q) return arr;
+    return arr.filter(x => {
+      const hay = [
+        x.title,
+        x.topic,
+        x.level
+        // tags есть, но пока не используем активно
+      ].map(norm).join(" | ");
+      return hay.includes(q);
+    });
   }
 
   function render(){
-    const t = I18N[activeLocale] || I18N.ru;
-    allItems = flattenForLocale(activeLocale);
+    packs = getLocalePacks(activeLocale);
+    const shown = filterPacks(packs);
 
-    const items = sortItems(filtered());
-
-    if (!items.length){
-      els.groups.innerHTML = "";
-      els.status.hidden = false;
-      els.status.textContent = t.empty;
+    if (!shown.length){
+      elList.hidden = true;
+      elEmpty.hidden = false;
       return;
     }
 
-    els.status.hidden = true;
+    elEmpty.hidden = true;
+    elList.hidden = false;
 
-    // group items
-    const map = new Map();
-    for (const it of items){
-      const key = groupKey(it);
-      if (!map.has(key)) map.set(key, []);
-      map.get(key).push(it);
-    }
-
-    // Keep a stable group order
-    const order = [t.startHere, t.themes, t.grammar, t.other];
-    const keys = [...map.keys()].sort((a,b) => {
-      const ia = order.indexOf(a); const ib = order.indexOf(b);
-      if (ia === -1 && ib === -1) return a.localeCompare(b);
-      if (ia === -1) return 1;
-      if (ib === -1) return -1;
-      return ia - ib;
-    });
-
-    els.groups.innerHTML = keys.map(k => {
-      const arr = map.get(k);
-
-      const cards = arr.map(x => {
-        const meta = []
-          .concat(x.level ? [chip(`${t.level}: ${x.level}`)] : [])
-          .concat(x.topic ? [chip(`${t.topic}: ${x.topic}`)] : [])
-          .concat(Number.isFinite(x.words) ? [chip(`${t.words}: ${x.words}`)] : [])
-          .concat(x.updated ? [chip(`${t.updated}: ${x.updated}`)] : [])
-          .concat((x.tags || []).slice(0,3).map(tag => chip(`#${tag}`)));
-
-        const fileName = (x.url || "").split("/").pop() || "pack.csv";
-
-        return `
-          <article class="card">
-            <div>
-              <h3 class="title">${esc(x.title)}</h3>
-              <div class="meta">
-                ${chip(`EN → ${esc(activeLocale.toUpperCase())}`)}
-                ${meta.join("")}
-              </div>
-            </div>
-
-            ${x.description ? `<p class="desc">${esc(x.description)}</p>` : `<p class="desc">CSV pack for Lexlet import.</p>`}
-
-            <div class="actions">
-              <a class="btn primary" href="${esc(x.url)}" download>
-                ${esc(t.download)} <small class="mono">${esc(fileName)}</small>
-              </a>
-              <button class="btn" type="button" data-copy="${esc(x.url)}">${esc(t.copy)}</button>
-            </div>
-          </article>
-        `;
-      }).join("");
-
-      return `
-        <section class="group">
-          <div class="grouphead">
-            <div>
-              <h2>${esc(k)}</h2>
-              <p>${esc(getLocaleTitle(activeLocale))} • ${arr.length}</p>
-            </div>
+    elList.innerHTML = shown.map(p => `
+      <div class="item">
+        <div class="itemTop">
+          <div class="titleRow">
+            <h3 class="title">
+              ${p.level ? `<span class="level">${esc(p.level)}</span>` : ""}
+              ${esc(p.title)}
+            </h3>
           </div>
-          <div class="grid">${cards}</div>
-        </section>
-      `;
-    }).join("");
+        </div>
 
-    // copy handlers
-    els.groups.querySelectorAll("[data-copy]").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        const url = btn.getAttribute("data-copy");
-        try{
-          await navigator.clipboard.writeText(url);
-          btn.textContent = t.copied;
-          setTimeout(() => btn.textContent = t.copy, 1200);
-        } catch {
-          prompt(t.copyFallback, url);
-        }
-      });
-    });
+        <div class="descRow">
+          <p class="desc">${esc(p.description || "Набор карточек для практики английского.")}</p>
+          <a class="btn primary" href="${esc(p.url)}" download>Скачать</a>
+        </div>
+
+        <div class="meta">
+          <span>EN → ${esc(activeLocale.toUpperCase())}</span>
+          ${p.level ? `<span>${esc(p.level)}</span>` : ""}
+          ${Number.isFinite(p.words) ? `<span>${esc(p.words)} слов</span>` : ""}
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function setLocale(localeId){
+    activeLocale = localeId;
+    elLangBtns.forEach(b => b.classList.toggle("active", b.dataset.locale === localeId));
+
+    // пока делаем RU-only: для остальных покажем пустоту (позже добавим i18n)
+    elQ.value = "";
+    render();
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("locale", localeId);
+    history.replaceState(null, "", url.toString());
   }
 
   async function init(){
-    const url = new URL(window.location.href);
-    const localeFromUrl = url.searchParams.get("locale");
-
-    // initial: browser language -> supported fallback
-    const browserLang = (navigator.language || "en").slice(0,2).toLowerCase();
-
     try{
       const res = await fetch(INDEX_URL, { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to load index.json");
       index = await res.json();
 
-      // normalize: accept either uiLocales or languages (older schema)
-      if (!index.uiLocales && index.languages){
-        index.uiLocales = index.languages;
-      }
+      // поддержка старого ключа "languages" на всякий
+      if (!index.uiLocales && index.languages) index.uiLocales = index.languages;
 
-      // ensure we have locales
-      if (!index.uiLocales || !index.uiLocales.length){
-        throw new Error("index.json has no uiLocales");
-      }
+      const url = new URL(window.location.href);
+      const fromUrl = url.searchParams.get("locale");
+      if (fromUrl) activeLocale = fromUrl;
 
-      buildTabs();
-      getCounts();
+      elLangBtns.forEach(btn => {
+        btn.addEventListener("click", () => setLocale(btn.dataset.locale));
+      });
 
-      els.updatedAt.textContent = index.updatedAt || "—";
+      elQ.addEventListener("input", render);
 
-      const supported = new Set(index.uiLocales.map(x => x.id));
-      activeLocale =
-        (supported.has(localeFromUrl) && localeFromUrl) ? localeFromUrl :
-        (supported.has(browserLang) ? browserLang :
-         (supported.has("ru") ? "ru" : index.uiLocales[0].id));
-
-      applyI18n(activeLocale);
-      setActiveTab();
-
-      // listeners
-      els.q.addEventListener("input", render);
-      els.sort.addEventListener("change", render);
-
-      els.status.hidden = false;
-      els.status.textContent = (I18N[activeLocale] || I18N.ru).loading;
-
-      render();
+      setLocale(activeLocale);
     } catch (e){
-      els.groups.innerHTML = "";
-      els.status.hidden = false;
-      els.status.textContent = "Could not load index.json. Make sure it is next to index.html and GitHub Pages is enabled.";
+      elList.hidden = true;
+      elEmpty.hidden = false;
+      elEmpty.textContent = "Не получилось загрузить данные библиотеки.";
       console.error(e);
     }
   }
